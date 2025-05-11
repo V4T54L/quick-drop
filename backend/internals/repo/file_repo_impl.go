@@ -1,9 +1,13 @@
 package repo
 
 import (
+	"context"
 	"database/sql"
 	"errors"
+	"time"
 )
+
+const queryTimeout = time.Second * 5
 
 type fileRepo struct {
 	db *sql.DB
@@ -18,13 +22,27 @@ func NewFileRepo(db *sql.DB) (FileRepo, error) {
 }
 
 func (r *fileRepo) AddFileMetadata(
-	filename, filepath string,
-) (id int, err error) {
-	return 0, nil
+	ctx context.Context, filename, outFilename string,
+) (err error) {
+	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	defer cancel()
+
+	query := `INSERT INTO file_data (filename, out_filename)
+	VALUES ($1, $2);`
+
+	_, err = r.db.ExecContext(ctx, query, filename, outFilename)
+
+	return
 }
 
-func (r *fileRepo) GetFileMetadata(id int) (
-	filename, filepath string, err error,
+func (r *fileRepo) GetFileMetadata(ctx context.Context, outFilename string) (
+	filename string, err error,
 ) {
-	return "", "", nil
+	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	defer cancel()
+
+	query := `SELECT filename FROM file_data WHERE out_filename = $1;`
+	err = r.db.QueryRowContext(ctx, query, outFilename).Scan(&filename)
+
+	return
 }

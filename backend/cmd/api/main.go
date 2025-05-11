@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"quick-drop-be/internals/config"
 	"quick-drop-be/internals/dbconnectors"
 	"quick-drop-be/internals/router"
 	"quick-drop-be/internals/server"
@@ -10,7 +11,7 @@ import (
 )
 
 func main() {
-	postgresConn, err := dbconnectors.GetPostgresDb("postgres://user:password@localhost:5432/db?sslmode=disable")
+	postgresConn, err := dbconnectors.GetPostgresDb(config.GetConfig().DBURI)
 	if err != nil {
 		log.Println("Error connecting to postgreSQL db: ", err)
 	} else {
@@ -33,7 +34,7 @@ func main() {
 	router.RegisterRoutes(r, fileService)
 
 	s := http.Server{
-		Addr:    ":8000",
+		Addr:    config.GetConfig().PORT,
 		Handler: r,
 	}
 

@@ -9,6 +9,7 @@ import (
 func NewChiRouter() *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
 
 	// TODO: Use strict policy for allowed origin
 	r.Use(cors.Handler(cors.Options{

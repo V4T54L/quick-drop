@@ -1,10 +1,13 @@
 import { HardDriveDownload } from "lucide-react"
 import { useEffect, useRef, useState, type ChangeEvent } from "react"
+import { uploadFileToServer } from "./api/file";
 
 const App = () => {
   const fileInput = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | undefined>();
   const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [downloadLink, setDownloadLink] = useState("")
 
   const handleUploadClick = () => {
     if (!fileInput.current) return;
@@ -19,6 +22,7 @@ const App = () => {
     const newFile = e.target.files[0]
     if (newFile.size > 1058336) {
       setError("Size limit exceeded: File should be smaller than 1 MB")
+      setFile(undefined)
     }
     setFile(newFile);
   };
@@ -29,6 +33,29 @@ const App = () => {
 
     const data = new FormData();
     data.append("file", file);
+
+    const upload = async () => {
+      if (file) {
+        setLoading(true);
+        setError("")
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+          // Await the uploadFileToServer function here
+          const uploadedFileUrl = await uploadFileToServer(formData);
+          setDownloadLink(uploadedFileUrl); // Set the link once the file is uploaded
+        } catch (err) {
+          setError(err instanceof Error ? err.message : "An unknown error occurred");
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    upload(); // Call the async function
+
+
   }, [file])
 
   // useEffect(() => {
@@ -52,6 +79,7 @@ const App = () => {
           <button
             className="bg-blue-500 px-4 py-2 rounded-lg font-semibold text-slate-300 hover:bg-blue-600"
             onClick={handleUploadClick}
+            disabled={loading}
           >Upload</button>
           <input type="file" className="hidden" ref={fileInput} onChange={handleFileChange} />
         </div>

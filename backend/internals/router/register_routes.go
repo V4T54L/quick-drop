@@ -10,8 +10,8 @@ import (
 func RegisterRoutes(r *chi.Mux, fileService service.FileService) {
 	r.Get("/health", healthHandler)
 
-	r.Get("files/{fileId}", fileService.GetFile)
-	r.Post("files", fileService.UploadFile)
+	r.Get("/files/{fileId}", fileService.GetFile)
+	r.Post("/files", fileService.UploadFile)
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
