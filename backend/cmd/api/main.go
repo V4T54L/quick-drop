@@ -6,16 +6,8 @@ import (
 	"quick-drop-be/internals/dbconnectors"
 	"quick-drop-be/internals/router"
 	"quick-drop-be/internals/server"
-
-	"github.com/go-chi/chi/v5"
+	"quick-drop-be/internals/service"
 )
-
-func registerRoutes(r *chi.Mux) {
-	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("healthy"))
-	})
-}
 
 func main() {
 	postgresConn, err := dbconnectors.GetPostgresDb("postgres://user:password@localhost:5432/db?sslmode=disable")
@@ -31,10 +23,14 @@ func main() {
 		}
 	}()
 
+	fileService, err := service.NewFileService(postgresConn)
+	if err != nil {
+		log.Fatal("Error initializing file service: ", err.Error())
+	}
+
 	r := router.NewChiRouter()
 
-	// TODO: Use Database in the routers
-	registerRoutes(r)
+	router.RegisterRoutes(r, fileService)
 
 	s := http.Server{
 		Addr:    ":8000",
