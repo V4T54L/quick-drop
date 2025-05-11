@@ -1,0 +1,16 @@
+services:
+  todo_db:
+    container_name: quickdrop_db
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: user
+      POSTGRES_USER: password
+      POSTGRES_DB: db
+    ports:
+      - "5432:5432"
+    volumes:
+      - quickdrop_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  quickdrop_postgres_data:

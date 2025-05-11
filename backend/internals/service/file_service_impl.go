@@ -32,13 +32,12 @@ func (s *fileServiceImpl) GetFile(
 	w http.ResponseWriter, r *http.Request,
 ) {
 	outFileName := chi.URLParam(r, "fileId")
-	// filename, err := s.repo.GetFileMetadata(r.Context(), outFileName)
-	// if err != nil {
-	// 	http.Error(w, "File not found", http.StatusNotFound)
-	// 	return
-	// }
+	filename, err := s.repo.GetFileMetadata(r.Context(), outFileName)
+	if err != nil {
+		http.Error(w, "File not found", http.StatusNotFound)
+		return
+	}
 
-	filename := "a.jpg"
 
 	uploadsDir := "./uploads"
 	filePath := filepath.Join(uploadsDir, outFileName)
@@ -98,11 +97,11 @@ func (s *fileServiceImpl) UploadFile(
 		return
 	}
 
-	// err = s.repo.AddFileMetadata(r.Context(), header.Filename, outFileName)
-	// if err != nil {
-	// 	http.Error(w, "Error querying the database", http.StatusInternalServerError)
-	// 	return
-	// }
+	err = s.repo.AddFileMetadata(r.Context(), header.Filename, outFileName)
+	if err != nil {
+		http.Error(w, "Error querying the database", http.StatusInternalServerError)
+		return
+	}
 
 	fileURL := fmt.Sprintf("%s/files/%s", config.GetConfig().ServerURL, outFileName)
 	w.WriteHeader(http.StatusOK)
