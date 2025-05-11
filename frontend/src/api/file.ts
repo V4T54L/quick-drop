@@ -11,13 +11,13 @@ export const uploadFileToServer = async (formData: FormData): Promise<string> =>
         console.log("Response : ", response)
         console.log("File Url : ", response.data.fileUrl)
 
-        if (response.status === 200) {
-            return response.data.fileUrl;
-        } else {
-            throw new Error("File upload failed. Please try again.");
-        }
+        return response.data.fileUrl;
     } catch (error) {
         console.error("Error uploading file:", error);
-        throw new Error("File upload failed. Please try again.");
+        if (error instanceof axios.AxiosError) {
+            throw new Error("File upload failed: " + error.response?.data);
+        }else{
+                    throw new Error("File upload failed. Please try again.");
+        }
     }
 };
