@@ -8,8 +8,10 @@ export const uploadFileToServer = async (formData: FormData): Promise<string> =>
             },
         });
 
+        console.log("Response : ", response)
+        console.log("File Url : ", response.data.fileUrl)
+
         if (response.status === 200) {
-            // Assuming the backend returns a JSON object with a 'fileUrl' field
             return response.data.fileUrl;
         } else {
             throw new Error("File upload failed. Please try again.");

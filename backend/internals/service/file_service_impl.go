@@ -10,6 +10,7 @@ import (
 	"quick-drop-be/internals/config"
 	"quick-drop-be/internals/repo"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 )
 
@@ -30,7 +31,27 @@ func NewFileService(db *sql.DB) (FileService, error) {
 func (s *fileServiceImpl) GetFile(
 	w http.ResponseWriter, r *http.Request,
 ) {
+	outFileName := chi.URLParam(r, "fileId")
+	// filename, err := s.repo.GetFileMetadata(r.Context(), outFileName)
+	// if err != nil {
+	// 	http.Error(w, "File not found", http.StatusNotFound)
+	// 	return
+	// }
 
+	filename := "a.jpg"
+
+	uploadsDir := "./uploads"
+	filePath := filepath.Join(uploadsDir, outFileName)
+
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		http.Error(w, "File not found on server", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
+
+	http.ServeFile(w, r, filePath)
 }
 
 func (s *fileServiceImpl) UploadFile(
@@ -77,11 +98,11 @@ func (s *fileServiceImpl) UploadFile(
 		return
 	}
 
-	err = s.repo.AddFileMetadata(r.Context(), header.Filename, outFileName)
-	if err != nil {
-		http.Error(w, "Error querying the database", http.StatusInternalServerError)
-		return
-	}
+	// err = s.repo.AddFileMetadata(r.Context(), header.Filename, outFileName)
+	// if err != nil {
+	// 	http.Error(w, "Error querying the database", http.StatusInternalServerError)
+	// 	return
+	// }
 
 	fileURL := fmt.Sprintf("%s/files/%s", config.GetConfig().ServerURL, outFileName)
 	w.WriteHeader(http.StatusOK)

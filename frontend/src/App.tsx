@@ -85,7 +85,17 @@ const App = () => {
         </div>
 
         <p className="text-red-500 text-center text-xs my-2">{error}</p>
+        {
+          downloadLink &&
+          <div className="mt-4 mx-auto w-fit max-w-4/5 overflow-auto">
+            <span className="pr-2 text-amber-400">Link:</span>
+            <a href={downloadLink}
+              className="hover:underline text-blue-300"
+              target='_blank'>{downloadLink}</a>
+          </div>
+        }
       </div>
+
     </main>
   )
 }

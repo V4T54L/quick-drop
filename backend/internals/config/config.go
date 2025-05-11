@@ -9,7 +9,7 @@ type Config struct {
 func GetConfig() *Config {
 	return &Config{
 		DBURI:     "postgres://user:password@localhost:5432/db?sslmode=disable",
-		ServerURL: "",
+		ServerURL: "http://localhost:8000",
 		PORT:      ":8000",
 	}
 }
