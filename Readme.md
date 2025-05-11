@@ -1,0 +1,2 @@
+# QuickDrop
+QuickDrop is a lightweight file-sharing app that lets users upload a file and receive a unique download link. Designed to demonstrate file handling, storage, and link generation. Useful as a backend utility or quick sharing tool.
